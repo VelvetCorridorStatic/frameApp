@@ -444,7 +444,7 @@
     // --- Position helpers (new)
     function computePositionBounds() {
       // Allow panning beyond edges by up to 50% of the visible canvas size
-      const margin = 0.5; // tweak to taste
+      const margin = 1.0; // tweak to taste
       if (!state.userImg) {
         return { minX: -1000, maxX: 1000, minY: -1000, maxY: 1000 };
       }
