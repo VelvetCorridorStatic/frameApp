@@ -143,16 +143,67 @@
           <input id="uploader" type="file" accept="image/*" />
         </div>
 
-        <div class="radio-group" role="radiogroup" aria-label="Frame">
-          <label><input type="radio" name="frame" value="frame1.webp" checked> frame1.webp</label>
-          <label><input type="radio" name="frame" value="frame2.webp"> frame2.webp</label>
-        </div>
+        <div class="group">
+  <label for="frameSelect">Frame</label>
+  <select id="frameSelect" style="padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#fff;width:100%;font-size:13px;">
+    <option value="CKT template landscape 120x190 dark.png" selected>CKT template landscape 120x190 dark</option>
+    <option value="CKT template landscape 120x190 light.png">CKT template landscape 120x190 light</option>
+    <option value="CKT template 150x120 dark.png">CKT template 150x120 dark</option>
+    <option value="CKT template 150x120 light.png">CKT template 150x120 light</option>
+    <option value="CKT template medium 160x135 dark.png">CKT template medium 160x135 dark</option>
+    <option value="CKT template medium 160x135 light.png">CKT template medium 160x135 light</option>
+    <option value="CKT template regular 215x165 dark.png">CKT template regular 215x165 dark</option>
+    <option value="CKT template regular 215x165 light.png">CKT template regular 215x165 light</option>
+    <option value="CKT template small close 50x40 dark.png">CKT template small close 50x40 dark</option>
+    <option value="CKT template small close 50x40 light.png">CKT template small close 50x40 light</option>
+    <option value="CKT template small far 50x40 dark.png">CKT template small far 50x40 dark</option>
+    <option value="CKT template small far 50x40 light.png">CKT template small far 50x40 light</option>
+    <option value="CKT template 55x55 cropped light.png">CKT template 55x55 cropped light</option>
+    <option value="CKT template 55x55 light.png">CKT template 55x55 light</option>
+    <option value="CKT template small close 55x55 light.png">CKT template small close 55x55 light</option>
+    <option value="CKT template small close 60x50 dark.png">CKT template small close 60x50 dark</option>
+    <option value="CKT template small close 60x50 light.png">CKT template small close 60x50 light</option>
+    <option value="CKT template small far 60x50 dark.png">CKT template small far 60x50 dark</option>
+    <option value="CKT template small far 60x50 light.png">CKT template small far 60x50 light</option>
+    <option value="CKT template 80x70 cropped light.png">CKT template 80x70 cropped light</option>
+    <option value="CKT template 80x70 light.png">CKT template 80x70 light</option>
+    <option value="CKT template small close 80x70 light.png">CKT template small close 80x70 light</option>
+    <option value="CKT template 90x80 cropped light.png">CKT template 90x80 cropped light</option>
+    <option value="CKT template 90x80 light.png">CKT template 90x80 light</option>
+    <option value="CKT template small close 90x80 light.png">CKT template small close 90x80 light</option>
+    <option value="CKT template small close 90x90 dark.png">CKT template small close 90x90 dark</option>
+    <option value="CKT template small close 90x90 light.png">CKT template small close 90x90 light</option>
+    <option value="CKT template 90x90 dark.png">CKT template 90x90 dark</option>
+    <option value="CKT template 90x90 light.png">CKT template 90x90 light</option>
+    <option value="CKT template 90x90 cropped dark.png">CKT template 90x90 cropped dark</option>
+    <option value="CKT template 90x90 cropped light.png">CKT template 90x90 cropped light</option>
+    <option value="ckt-aquarell-landscape-01 light.png">ckt-aquarell-landscape-01 light</option>
+    <option value="ckt-aquarell-portrait-01 light.png">ckt-aquarell-portrait-01 light</option>
+  </select>
+</div>
+
+
 
         <div class="group">
           <label for="scale">Zoom</label>
           <div class="row">
             <input id="scale" class="slider" type="range" min="0.25" max="4" step="0.01" value="1" />
             <span id="scaleOut" class="value" aria-live="polite">100%</span>
+          </div>
+        </div>
+
+        <!-- Position controls (new) -->
+        <div class="group">
+          <label>Position</label>
+          <div class="row">
+            <span style="width:36px;color:var(--muted)">X</span>
+            <input id="posX" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+            <span id="posXOut" class="value" aria-live="polite">0 px</span>
+          </div>
+          <div class="row">
+            <span style="width:36px;color:var(--muted)">Y</span>
+            <input id="posY" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+            <span id="posYOut" class="value" aria-live="polite">0 px</span>
           </div>
         </div>
 
@@ -211,10 +262,17 @@
     const ctx = canvas.getContext('2d');
     const stageWrap = document.getElementById('stageWrap');
     const uploader = document.getElementById('uploader');
-    const radioFrames = [...document.querySelectorAll('input[name="frame"]')];
+    const frameSelect = document.getElementById('frameSelect');
+
 
     const scaleSlider = document.getElementById('scale');
     const scaleOut = document.getElementById('scaleOut');
+
+    // Position sliders (new)
+    const posX = document.getElementById('posX');
+    const posXOut = document.getElementById('posXOut');
+    const posY = document.getElementById('posY');
+    const posYOut = document.getElementById('posYOut');
 
     const exposureSlider = document.getElementById('exposure');
     const exposureOut = document.getElementById('exposureOut');
@@ -237,7 +295,7 @@
 
     // --- State
     const state = {
-      frameSrc: 'frame1.webp',
+      frameSrc: 'CKT template landscape 120x190 dark.png',
       frameImg: null,
       userOrigImg: null, // original <img>
       userImg: null,     // processed offscreen canvas
@@ -322,6 +380,8 @@
         scaleOut.textContent = `${Math.round(rel * 100)}%`;
       }
 
+      clampPosition();
+      syncPositionUI();
       draw();
     }
 
@@ -336,6 +396,8 @@
       state.user.y = (ch - ih * s) / 2;
       scaleSlider.value = '1.00';   // 1.00 = 100% of fit
       scaleOut.textContent = '100%';
+      clampPosition();
+      syncPositionUI();
       draw();
     }
 
@@ -349,6 +411,8 @@
       state.user.y = (ch - ih * state.fitScale) / 2;
       scaleSlider.value = '1.00';
       scaleOut.textContent = '100%';
+      clampPosition();
+      syncPositionUI();
       draw();
     }
 
@@ -375,6 +439,41 @@
       const w = state.userImg.width * state.user.scale;
       const h = state.userImg.height * state.user.scale;
       return px >= state.user.x && py >= state.user.y && px <= state.user.x + w && py <= state.user.y + h;
+    }
+
+    // --- Position helpers (new)
+    function computePositionBounds() {
+      // Allow panning beyond edges by up to 50% of the visible canvas size
+      const margin = 0.5; // tweak to taste
+      if (!state.userImg) {
+        return { minX: -1000, maxX: 1000, minY: -1000, maxY: 1000 };
+      }
+      const w = state.userImg.width * state.user.scale;
+      const h = state.userImg.height * state.user.scale;
+      const minX = -w + state.viewW * (1 - margin);
+      const maxX = state.viewW * margin;
+      const minY = -h + state.viewH * (1 - margin);
+      const maxY = state.viewH * margin;
+      return { minX, maxX, minY, maxY };
+    }
+
+    function clampPosition() {
+      const { minX, maxX, minY, maxY } = computePositionBounds();
+      state.user.x = clamp(state.user.x, minX, maxX);
+      state.user.y = clamp(state.user.y, minY, maxY);
+    }
+
+    function syncPositionUI() {
+      const { minX, maxX, minY, maxY } = computePositionBounds();
+      posX.min = Math.floor(minX);
+      posX.max = Math.ceil(maxX);
+      posY.min = Math.floor(minY);
+      posY.max = Math.ceil(maxY);
+
+      posX.value = String(Math.round(state.user.x));
+      posY.value = String(Math.round(state.user.y));
+      posXOut.textContent = `${Math.round(state.user.x)} px`;
+      posYOut.textContent = `${Math.round(state.user.y)} px`;
     }
 
     // --- Color processing (one pass, debounced)
@@ -457,6 +556,8 @@
         fitUserImage();
       } else {
         // Keep current absolute scale/position; just redraw
+        clampPosition();
+        syncPositionUI();
         draw();
       }
     }
@@ -532,6 +633,8 @@
         scaleOut.textContent = `${Math.round(rel * 100)}%`;
 
         e.preventDefault();
+        clampPosition();
+        syncPositionUI();
         draw();
         return;
       }
@@ -543,6 +646,8 @@
         state.user.x = state.user.imgStartX + dx;
         state.user.y = state.user.imgStartY + dy;
         e.preventDefault();
+        clampPosition();
+        syncPositionUI();
         draw();
       }
     }
@@ -561,13 +666,13 @@
     })().catch(console.error);
 
     // --- Events
-    radioFrames.forEach(r => r.addEventListener('change', async (e) => {
-      state.frameSrc = e.target.value;
-      state.frameImg = await loadImage(state.frameSrc);
-      const prevW = state.viewW;
-      layoutCanvas();
-      if (state.userImg && Math.abs(state.viewW - prevW) > 2) draw();
-    }));
+    frameSelect.addEventListener('change', async (e) => {
+  state.frameSrc = e.target.value;
+  state.frameImg = await loadImage(state.frameSrc);
+  const prevW = state.viewW;
+  layoutCanvas();
+  if (state.userImg && Math.abs(state.viewW - prevW) > 2) draw();
+});
 
     uploader.addEventListener('change', async (e) => {
       const file = e.target.files?.[0];
@@ -600,6 +705,25 @@
       state.user.scale = newScale;
 
       scaleOut.textContent = `${Math.round(rel * 100)}%`;
+      clampPosition();
+      syncPositionUI();
+      draw();
+    });
+
+    // Position sliders (new)
+    posX.addEventListener('input', (e) => {
+      if (!state.userImg) return;
+      state.user.x = parseInt(e.target.value, 10) || 0;
+      clampPosition();
+      syncPositionUI();
+      draw();
+    });
+
+    posY.addEventListener('input', (e) => {
+      if (!state.userImg) return;
+      state.user.y = parseInt(e.target.value, 10) || 0;
+      clampPosition();
+      syncPositionUI();
       draw();
     });
 
@@ -651,6 +775,8 @@
       const rel = newScale / state.fitScale;
       scaleSlider.value = rel.toFixed(2);
       scaleOut.textContent = `${Math.round(rel * 100)}%`;
+      clampPosition();
+      syncPositionUI();
       draw();
     }, { passive: false });
 
@@ -681,7 +807,7 @@
         const dataURL = canvas.toDataURL('image/png');
         const w = window.open('', '_blank');
         if (w) {
-          w.document.write('<meta name="viewport" content="width=device-width,initial-scale=1"/>');
+          w.document.write('<meta name="viewport" content="width=device-width,initial-scale=1"/>' );
           w.document.write('<title>framed.png</title>');
           w.document.write('<img src="' + dataURL + '" style="max-width:100%;height:auto;display:block;margin:0 auto" />');
         } else {
