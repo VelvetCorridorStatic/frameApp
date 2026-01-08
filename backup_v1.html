@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Framer — Image in Frame</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;       /* page background */
+      --panel: #ffffff;    /* control panel bg */
+      --muted: #5f6368;    /* secondary text */
+      --text: #111315;     /* primary text */
+      --accent: #1a73e8;   /* buttons/slider thumb */
+      --border: rgba(0,0,0,.12);
+      --shadow: 0 6px 20px rgba(0,0,0,.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+    }
+
+    /* Default (mobile): stacked layout */
+    .shell { display: block; }
+    main { display: grid; place-items: center; padding: 8px 16px 16px; }
+
+    /* Stage area: no box behind the frame */
+    .stage-wrap {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      min-height: 300px;
+    }
+    canvas {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      background: #ffffff;    /* white canvas behind your framed image */
+      border-radius: 0;
+      touch-action: pan-y;    /* allow page scroll when not manipulating the image */
+    }
+
+    /* Controls (light theme) */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      width: min(980px, 96vw);
+      margin: 8px auto 0;
+    }
+    .group { display:flex; flex-direction:column; gap:6px; }
+    .row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .controls label { font-size: 12px; color: var(--muted); }
+    .value { min-width: 56px; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+    input[type="file"] { color: var(--muted); }
+    .radio-group { display: inline-flex; gap: 8px; align-items: center; flex-wrap:wrap; }
+    .radio-group label {
+      display:inline-flex; gap:6px; align-items:center;
+      padding:6px 10px; border:1px solid var(--border); border-radius:10px;
+      cursor:pointer; background:#fff; color: var(--text);
+    }
+    .radio-group input { margin: 0; }
+
+    .slider {
+      appearance: none; height: 6px; border-radius: 999px; background: #e5e7eb; outline: none; width: 220px; cursor: pointer; border: 1px solid var(--border);
+    }
+    .slider::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); box-shadow: 0 2px 8px rgba(26,115,232,.3); }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: linear-gradient(#ffffff, #f4f6f8);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 1px 0 #fff inset;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn#download { background: linear-gradient(#e8f0fe, #dbe8fd); border-color: rgba(26,115,232,.25); }
+
+    /* Desktop (≥1024px): two-pane layout */
+    @media (min-width: 1024px) {
+      .shell {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) 380px;
+        gap: 16px;
+        width: min(1400px, 96vw);
+        margin: 0 auto;
+        align-items: start;
+      }
+      main { padding: 8px 16px 16px; }
+      .stage-wrap {
+        height: 100vh;          /* match window height */
+        min-height: 400px;
+        display: grid;
+        align-content: center;
+        justify-items: center;
+      }
+      #controls {
+        position: sticky;
+        top: 12px;
+        max-height: calc(100vh - 24px);
+        overflow: auto;
+        width: 100%;
+      }
+      .controls {
+        width: auto;
+      }
+      .button-row { display:flex; gap:10px; flex-wrap:wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="shell">
+    <main id="left">
+      <div class="stage-wrap" id="stageWrap">
+        <canvas id="stage" width="1200" height="800" aria-label="Composition canvas"></canvas>
+      </div>
+    </main>
+    <aside id="right">
+      <section class="controls" id="controls" role="group" aria-label="Controls">
+        <div class="group">
+          <label for="uploader">Upload image</label>
+          <input id="uploader" type="file" accept="image/*" />
+        </div>
+
+        <div class="group">
+  <label for="frameSelect">Frame</label>
+  <select id="frameSelect" style="padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#fff;width:100%;font-size:13px;">
+    <option value="CKT template landscape 120x190 dark.png" selected>CKT template landscape 120x190 dark</option>
+    <option value="CKT template landscape 120x190 light.png">CKT template landscape 120x190 light</option>
+    <option value="CKT template 150x120 dark.png">CKT template 150x120 dark</option>
+    <option value="CKT template 150x120 light.png">CKT template 150x120 light</option>
+    <option value="CKT template medium 160x135 dark.png">CKT template medium 160x135 dark</option>
+    <option value="CKT template medium 160x135 light.png">CKT template medium 160x135 light</option>
+    <option value="CKT template regular 215x165 dark.png">CKT template regular 215x165 dark</option>
+    <option value="CKT template regular 215x165 light.png">CKT template regular 215x165 light</option>
+    <option value="CKT template small close 50x40 dark.png">CKT template small close 50x40 dark</option>
+    <option value="CKT template small close 50x40 light.png">CKT template small close 50x40 light</option>
+    <option value="CKT template small far 50x40 dark.png">CKT template small far 50x40 dark</option>
+    <option value="CKT template small far 50x40 light.png">CKT template small far 50x40 light</option>
+    <option value="CKT template 55x55 cropped light.png">CKT template 55x55 cropped light</option>
+    <option value="CKT template 55x55 light.png">CKT template 55x55 light</option>
+    <option value="CKT template small close 55x55 light.png">CKT template small close 55x55 light</option>
+    <option value="CKT template small close 60x50 dark.png">CKT template small close 60x50 dark</option>
+    <option value="CKT template small close 60x50 light.png">CKT template small close 60x50 light</option>
+    <option value="CKT template small far 60x50 dark.png">CKT template small far 60x50 dark</option>
+    <option value="CKT template small far 60x50 light.png">CKT template small far 60x50 light</option>
+    <option value="CKT template 80x70 cropped light.png">CKT template 80x70 cropped light</option>
+    <option value="CKT template 80x70 light.png">CKT template 80x70 light</option>
+    <option value="CKT template small close 80x70 light.png">CKT template small close 80x70 light</option>
+    <option value="CKT template 90x80 cropped light.png">CKT template 90x80 cropped light</option>
+    <option value="CKT template 90x80 light.png">CKT template 90x80 light</option>
+    <option value="CKT template small close 90x80 light.png">CKT template small close 90x80 light</option>
+    <option value="CKT template small close 90x90 dark.png">CKT template small close 90x90 dark</option>
+    <option value="CKT template small close 90x90 light.png">CKT template small close 90x90 light</option>
+    <option value="CKT template 90x90 dark.png">CKT template 90x90 dark</option>
+    <option value="CKT template 90x90 light.png">CKT template 90x90 light</option>
+    <option value="CKT template 90x90 cropped dark.png">CKT template 90x90 cropped dark</option>
+    <option value="CKT template 90x90 cropped light.png">CKT template 90x90 cropped light</option>
+    <option value="ckt-aquarell-landscape-01 light.png">ckt-aquarell-landscape-01 light</option>
+    <option value="ckt-aquarell-portrait-01 light.png">ckt-aquarell-portrait-01 light</option>
+  </select>
+</div>
+
+
+
+        <div class="group">
+          <label for="scale">Zoom</label>
+          <div class="row">
+            <input id="scale" class="slider" type="range" min="0.25" max="4" step="0.01" value="1" />
+            <span id="scaleOut" class="value" aria-live="polite">100%</span>
+          </div>
+        </div>
+
+        <!-- Position controls (new) -->
+        <div class="group">
+          <label>Position</label>
+          <div class="row">
+            <span style="width:36px;color:var(--muted)">X</span>
+            <input id="posX" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+            <span id="posXOut" class="value" aria-live="polite">0 px</span>
+          </div>
+          <div class="row">
+            <span style="width:36px;color:var(--muted)">Y</span>
+            <input id="posY" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+            <span id="posYOut" class="value" aria-live="polite">0 px</span>
+          </div>
+        </div>
+
+        <div class="group">
+          <label for="exposure">Exposure</label>
+          <div class="row">
+            <input id="exposure" class="slider" type="range" min="-2" max="2" step="0.01" value="0" />
+            <span id="exposureOut" class="value" aria-live="polite">0.00 EV</span>
+          </div>
+        </div>
+
+        <div class="group">
+          <label for="contrast">Contrast</label>
+          <div class="row">
+            <input id="contrast" class="slider" type="range" min="-50" max="50" step="1" value="0" />
+            <span id="contrastOut" class="value" aria-live="polite">0</span>
+          </div>
+        </div>
+
+        <div class="group">
+          <label for="saturation">Saturation</label>
+          <div class="row">
+            <input id="saturation" class="slider" type="range" min="0" max="2" step="0.01" value="1" />
+            <span id="saturationOut" class="value" aria-live="polite">100%</span>
+          </div>
+        </div>
+
+        <div class="group">
+          <label for="temperature">Temperature</label>
+          <div class="row">
+            <input id="temperature" class="slider" type="range" min="-100" max="100" step="1" value="0" />
+            <span id="temperatureOut" class="value" aria-live="polite">0</span>
+          </div>
+        </div>
+
+        <div class="group">
+          <label for="tint">Tint</label>
+          <div class="row">
+            <input id="tint" class="slider" type="range" min="-100" max="100" step="1" value="0" />
+            <span id="tintOut" class="value" aria-live="polite">0</span>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="fit" class="btn" title="Center & fit">Fit to view</button>
+          <button id="reset" class="btn" title="Reset pan/zoom">Reset</button>
+          <button id="download" class="btn" title="Export a PNG">Download PNG</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <script>
+    // --- Elements
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+    const stageWrap = document.getElementById('stageWrap');
+    const uploader = document.getElementById('uploader');
+    const frameSelect = document.getElementById('frameSelect');
+
+
+    const scaleSlider = document.getElementById('scale');
+    const scaleOut = document.getElementById('scaleOut');
+
+    // Position sliders (new)
+    const posX = document.getElementById('posX');
+    const posXOut = document.getElementById('posXOut');
+    const posY = document.getElementById('posY');
+    const posYOut = document.getElementById('posYOut');
+
+    const exposureSlider = document.getElementById('exposure');
+    const exposureOut = document.getElementById('exposureOut');
+
+    const contrastSlider = document.getElementById('contrast');
+    const contrastOut = document.getElementById('contrastOut');
+
+    const saturationSlider = document.getElementById('saturation');
+    const saturationOut = document.getElementById('saturationOut');
+
+    const temperatureSlider = document.getElementById('temperature');
+    const temperatureOut = document.getElementById('temperatureOut');
+
+    const tintSlider = document.getElementById('tint');
+    const tintOut = document.getElementById('tintOut');
+
+    const btnFit = document.getElementById('fit');
+    const btnReset = document.getElementById('reset');
+    const btnDownload = document.getElementById('download');
+
+    // --- State
+    const state = {
+      frameSrc: 'CKT template landscape 120x190 dark.png',
+      frameImg: null,
+      userOrigImg: null, // original <img>
+      userImg: null,     // processed offscreen canvas
+      viewW: 800,
+      viewH: 600,
+      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      fitScale: 1,       // baseline for Zoom = 1.0
+      // Adjustments
+      exposureStops: 0,
+      contrastAmt: 0,      // -50..+50 (linear contrast)
+      saturationMul: 1,    // 0..2
+      temperatureAmt: 0,   // -100..+100 (cool..warm)
+      tintAmt: 0,          // -100..+100 (green..magenta)
+      // Interaction
+      processingTimer: null,
+      user: { x: 0, y: 0, scale: 1, isDragging: false, dragStartX: 0, dragStartY: 0, imgStartX: 0, imgStartY: 0 },
+      pinch: { active: false, startDist: 0, startScale: 1, midX: 0, midY: 0 },
+      pointers: new Map(),
+    };
+
+    // --- Helpers
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.decoding = 'async';
+        img.src = src;
+      });
+    }
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+    function applyDPR() {
+      state.dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.style.width = state.viewW + 'px';
+      canvas.style.height = state.viewH + 'px';
+      canvas.width = Math.round(state.viewW * state.dpr);
+      canvas.height = Math.round(state.viewH * state.dpr);
+      ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0); // draw in CSS px
+    }
+
+    // Compute canvas CSS size from frame aspect and viewport
+    function layoutCanvas() {
+      const desktop = window.matchMedia('(min-width: 1024px)').matches;
+      const aspect = state.frameImg ? state.frameImg.width / state.frameImg.height : 1200 / 800;
+
+      let w, h;
+      if (desktop) {
+        const viewportH = window.innerHeight;
+        h = Math.max(400, Math.floor(viewportH));
+        const idealW = Math.round(h * aspect);
+        const wrapRect = stageWrap.getBoundingClientRect();
+        const maxW = Math.max(320, Math.floor(wrapRect.width - 24));
+        w = Math.min(idealW, maxW);
+      } else {
+        const maxW = Math.min(1200, Math.floor(window.innerWidth * 0.92));
+        w = maxW;
+        h = Math.round(w / aspect);
+      }
+
+      const oldW = state.viewW, oldH = state.viewH;
+      const hadUser = !!state.userImg;
+
+      state.viewW = w; state.viewH = h;
+      applyDPR();
+
+      if (hadUser) {
+        // Recompute fit baseline for new canvas size
+        const iw = state.userImg.width, ih = state.userImg.height;
+        state.fitScale = Math.min(state.viewW / iw, state.viewH / ih);
+
+        // Preserve placement proportionally
+        const kx = w / oldW, ky = h / oldH;
+        const k = Math.min(kx, ky);
+        state.user.x *= kx;
+        state.user.y *= ky;
+        state.user.scale *= k;
+
+        // Sync slider to current zoom relative to new fit
+        const rel = state.user.scale / state.fitScale;
+        scaleSlider.value = clamp(rel, parseFloat(scaleSlider.min), parseFloat(scaleSlider.max)).toFixed(2);
+        scaleOut.textContent = `${Math.round(rel * 100)}%`;
+      }
+
+      clampPosition();
+      syncPositionUI();
+      draw();
+    }
+
+    function fitUserImage() {
+      if (!state.userImg) return;
+      const cw = state.viewW, ch = state.viewH;
+      const iw = state.userImg.width, ih = state.userImg.height;
+      const s = Math.min(cw / iw, ch / ih);
+      state.fitScale = s;           // set baseline
+      state.user.scale = s;         // start at "fit"
+      state.user.x = (cw - iw * s) / 2;
+      state.user.y = (ch - ih * s) / 2;
+      scaleSlider.value = '1.00';   // 1.00 = 100% of fit
+      scaleOut.textContent = '100%';
+      clampPosition();
+      syncPositionUI();
+      draw();
+    }
+
+    function resetTransform() {
+      if (!state.userImg) return;
+      const cw = state.viewW, ch = state.viewH;
+      const iw = state.userImg.width, ih = state.userImg.height;
+      state.fitScale = Math.min(cw / iw, ch / ih);
+      state.user.scale = state.fitScale;
+      state.user.x = (cw - iw * state.fitScale) / 2;
+      state.user.y = (ch - ih * state.fitScale) / 2;
+      scaleSlider.value = '1.00';
+      scaleOut.textContent = '100%';
+      clampPosition();
+      syncPositionUI();
+      draw();
+    }
+
+    function draw() {
+      const { frameImg, userImg, user, viewW, viewH } = state;
+      ctx.clearRect(0, 0, viewW, viewH);
+      ctx.fillStyle = '#ffffff'; // white canvas bg
+      ctx.fillRect(0, 0, viewW, viewH);
+
+      if (userImg) {
+        const w = userImg.width * user.scale;
+        const h = userImg.height * user.scale;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(userImg, user.x, user.y, w, h);
+      }
+      if (frameImg) {
+        ctx.drawImage(frameImg, 0, 0, viewW, viewH);
+      }
+    }
+
+    function hitOnUserImage(px, py) {
+      if (!state.userImg) return false;
+      const w = state.userImg.width * state.user.scale;
+      const h = state.userImg.height * state.user.scale;
+      return px >= state.user.x && py >= state.user.y && px <= state.user.x + w && py <= state.user.y + h;
+    }
+
+    // --- Position helpers (new)
+    function computePositionBounds() {
+      // Allow panning beyond edges by up to 50% of the visible canvas size
+      const margin = 1.0; // tweak to taste
+      if (!state.userImg) {
+        return { minX: -1000, maxX: 1000, minY: -1000, maxY: 1000 };
+      }
+      const w = state.userImg.width * state.user.scale;
+      const h = state.userImg.height * state.user.scale;
+      const minX = -w + state.viewW * (1 - margin);
+      const maxX = state.viewW * margin;
+      const minY = -h + state.viewH * (1 - margin);
+      const maxY = state.viewH * margin;
+      return { minX, maxX, minY, maxY };
+    }
+
+    function clampPosition() {
+      const { minX, maxX, minY, maxY } = computePositionBounds();
+      state.user.x = clamp(state.user.x, minX, maxX);
+      state.user.y = clamp(state.user.y, minY, maxY);
+    }
+
+    function syncPositionUI() {
+      const { minX, maxX, minY, maxY } = computePositionBounds();
+      posX.min = Math.floor(minX);
+      posX.max = Math.ceil(maxX);
+      posY.min = Math.floor(minY);
+      posY.max = Math.ceil(maxY);
+
+      posX.value = String(Math.round(state.user.x));
+      posY.value = String(Math.round(state.user.y));
+      posXOut.textContent = `${Math.round(state.user.x)} px`;
+      posYOut.textContent = `${Math.round(state.user.y)} px`;
+    }
+
+    // --- Color processing (one pass, debounced)
+    function scheduleProcess() {
+      clearTimeout(state.processingTimer);
+      state.processingTimer = setTimeout(processImage, 80);
+    }
+
+    function processImage() {
+      if (!state.userOrigImg) return;
+
+      const src = state.userOrigImg;
+      const w = src.naturalWidth || src.width;
+      const h = src.naturalHeight || src.height;
+
+      const off = document.createElement('canvas');
+      off.width = w; off.height = h;
+      const octx = off.getContext('2d');
+      octx.drawImage(src, 0, 0, w, h);
+
+      const imgData = octx.getImageData(0, 0, w, h);
+      const d = imgData.data;
+
+      // Params
+      const exposure = Math.pow(2, state.exposureStops);          // 2^EV in linear
+      const contrast = Math.pow(2, state.contrastAmt / 50);       // perceptual-ish contrast multiplier
+      const sat = state.saturationMul;                            // 0..2
+      // Temperature/Tint as gentle channel multipliers
+      const t = state.temperatureAmt / 100;  // -1..+1
+      const ti = state.tintAmt / 100;        // -1..+1
+      const rMul = 1 + 0.15 * t - 0.05 * ti; // warmer adds red; magenta reduces green
+      const gMul = 1 + 0.15 * ti;            // tint swings green channel
+      const bMul = 1 - 0.15 * t - 0.05 * ti; // cooler adds blue
+
+      // sRGB <-> Linear helpers
+      const srgbToLin = v => {
+        v = v / 255;
+        return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      };
+      const linToSrgb = v => {
+        v = Math.max(0, Math.min(1, v));
+        return v <= 0.0031308 ? 255 * v * 12.92 : 255 * (1.055 * Math.pow(v, 1/2.4) - 0.055);
+      };
+
+      for (let i = 0; i < d.length; i += 4) {
+        // to linear
+        let rl = srgbToLin(d[i]);
+        let gl = srgbToLin(d[i+1]);
+        let bl = srgbToLin(d[i+2]);
+
+        // exposure
+        rl *= exposure; gl *= exposure; bl *= exposure;
+
+        // temperature/tint (channel multipliers)
+        rl *= rMul; gl *= gMul; bl *= bMul;
+
+        // saturation in linear: mix with luminance
+        const Y = 0.2126*rl + 0.7152*gl + 0.0722*bl;
+        rl = Y + (rl - Y) * sat;
+        gl = Y + (gl - Y) * sat;
+        bl = Y + (bl - Y) * sat;
+
+        // contrast around 0.5 (linear midpoint-ish)
+        rl = (rl - 0.5) * contrast + 0.5;
+        gl = (gl - 0.5) * contrast + 0.5;
+        bl = (bl - 0.5) * contrast + 0.5;
+
+        // to sRGB
+        d[i]   = linToSrgb(rl);
+        d[i+1] = linToSrgb(gl);
+        d[i+2] = linToSrgb(bl);
+        // alpha unchanged
+      }
+
+      octx.putImageData(imgData, 0, 0);
+      state.userImg = off;
+
+      // If first build, fit to view
+      if (state.fitScale === 1 && state.user.x === 0 && state.user.y === 0 && state.user.scale === 1) {
+        fitUserImage();
+      } else {
+        // Keep current absolute scale/position; just redraw
+        clampPosition();
+        syncPositionUI();
+        draw();
+      }
+    }
+
+    // --- Coords & gestures
+    function getCanvasPoint(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const x = (clientX - rect.left) / rect.width * state.viewW;
+      const y = (clientY - rect.top) / rect.height * state.viewH;
+      return { x, y };
+    }
+    function distance(p1, p2) { const dx = p1.x - p2.x, dy = p1.y - p2.y; return Math.hypot(dx, dy); }
+
+    function onPointerDown(e) {
+      if (!state.userImg) return;
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (state.pointers.size === 2) {
+        const [a, b] = [...state.pointers.values()];
+        const pa = getCanvasPoint(a.x, a.y);
+        const pb = getCanvasPoint(b.x, b.y);
+        state.pinch.active = true;
+        state.pinch.startDist = distance(pa, pb);
+        state.pinch.startScale = state.user.scale;
+        state.pinch.midX = (pa.x + pb.x) / 2;
+        state.pinch.midY = (pa.y + pb.y) / 2;
+        try { canvas.setPointerCapture(e.pointerId); } catch {}
+        return;
+      }
+
+      if (state.pointers.size === 1) {
+        const pt = getCanvasPoint(e.clientX, e.clientY);
+        if (hitOnUserImage(pt.x, pt.y)) {
+          state.user.isDragging = true;
+          state.user.dragStartX = pt.x;
+          state.user.dragStartY = pt.y;
+          state.user.imgStartX = state.user.x;
+          state.user.imgStartY = state.user.y;
+          try { canvas.setPointerCapture(e.pointerId); } catch {}
+          e.preventDefault();
+        } else {
+          state.user.isDragging = false;
+        }
+      }
+    }
+
+    function onPointerMove(e) {
+      if (!state.userImg) return;
+      if (state.pointers.has(e.pointerId)) {
+        state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      }
+
+      if (state.pinch.active && state.pointers.size >= 2) {
+        const [a, b] = [...state.pointers.values()];
+        const pa = getCanvasPoint(a.x, a.y);
+        const pb = getCanvasPoint(b.x, b.y);
+        const d = Math.max(10, distance(pa, pb));
+        let newScale = state.pinch.startScale * (d / state.pinch.startDist);
+
+        const minAbs = state.fitScale * parseFloat(scaleSlider.min);
+        const maxAbs = state.fitScale * parseFloat(scaleSlider.max);
+        newScale = clamp(newScale, minAbs, maxAbs);
+
+        const mx = state.pinch.midX, my = state.pinch.midY;
+        const imgX = (mx - state.user.x) / state.user.scale;
+        const imgY = (my - state.user.y) / state.user.scale;
+        state.user.x = mx - imgX * newScale;
+        state.user.y = my - imgY * newScale;
+        state.user.scale = newScale;
+
+        const rel = newScale / state.fitScale;
+        scaleSlider.value = rel.toFixed(2);
+        scaleOut.textContent = `${Math.round(rel * 100)}%`;
+
+        e.preventDefault();
+        clampPosition();
+        syncPositionUI();
+        draw();
+        return;
+      }
+
+      if (state.user.isDragging) {
+        const pt = getCanvasPoint(e.clientX, e.clientY);
+        const dx = pt.x - state.user.dragStartX;
+        const dy = pt.y - state.user.dragStartY;
+        state.user.x = state.user.imgStartX + dx;
+        state.user.y = state.user.imgStartY + dy;
+        e.preventDefault();
+        clampPosition();
+        syncPositionUI();
+        draw();
+      }
+    }
+
+    function onPointerUp(e) {
+      state.pointers.delete(e.pointerId);
+      if (state.pointers.size < 2) state.pinch.active = false;
+      if (state.pointers.size === 0) state.user.isDragging = false;
+      try { canvas.releasePointerCapture(e.pointerId); } catch {}
+    }
+
+    // --- Init
+    (async function init() {
+      state.frameImg = await loadImage(state.frameSrc);
+      layoutCanvas();
+    })().catch(console.error);
+
+    // --- Events
+    frameSelect.addEventListener('change', async (e) => {
+  state.frameSrc = e.target.value;
+  state.frameImg = await loadImage(state.frameSrc);
+  const prevW = state.viewW;
+  layoutCanvas();
+  if (state.userImg && Math.abs(state.viewW - prevW) > 2) draw();
+});
+
+    uploader.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      const img = await loadImage(url);
+      state.userOrigImg = img;
+
+      // Build first processed version
+      processImage();
+      // Fit after first processing
+      setTimeout(() => { fitUserImage(); }, 0);
+    });
+
+    // Zoom slider (relative to Fit)
+    scaleSlider.addEventListener('input', (e) => {
+      if (!state.userImg) return;
+      const rel = parseFloat(e.target.value); // 0.25..4
+      const newScale = clamp(rel, parseFloat(scaleSlider.min), parseFloat(scaleSlider.max)) * state.fitScale;
+
+      const iw = state.userImg.width * state.user.scale;
+      const ih = state.userImg.height * state.user.scale;
+      const cx = state.user.x + iw / 2;
+      const cy = state.user.y + ih / 2;
+
+      const iw2 = state.userImg.width * newScale;
+      const ih2 = state.userImg.height * newScale;
+      state.user.x = cx - iw2 / 2;
+      state.user.y = cy - ih2 / 2;
+      state.user.scale = newScale;
+
+      scaleOut.textContent = `${Math.round(rel * 100)}%`;
+      clampPosition();
+      syncPositionUI();
+      draw();
+    });
+
+    // Position sliders (new)
+    posX.addEventListener('input', (e) => {
+      if (!state.userImg) return;
+      state.user.x = parseInt(e.target.value, 10) || 0;
+      clampPosition();
+      syncPositionUI();
+      draw();
+    });
+
+    posY.addEventListener('input', (e) => {
+      if (!state.userImg) return;
+      state.user.y = parseInt(e.target.value, 10) || 0;
+      clampPosition();
+      syncPositionUI();
+      draw();
+    });
+
+    // Color controls (debounced)
+    exposureSlider.addEventListener('input', (e) => {
+      state.exposureStops = parseFloat(e.target.value) || 0;
+      exposureOut.textContent = `${state.exposureStops.toFixed(2)} EV`;
+      scheduleProcess();
+    });
+    contrastSlider.addEventListener('input', (e) => {
+      state.contrastAmt = parseInt(e.target.value, 10) || 0;
+      contrastOut.textContent = `${state.contrastAmt}`;
+      scheduleProcess();
+    });
+    saturationSlider.addEventListener('input', (e) => {
+      state.saturationMul = parseFloat(e.target.value) || 1;
+      saturationOut.textContent = `${Math.round(state.saturationMul * 100)}%`;
+      scheduleProcess();
+    });
+    temperatureSlider.addEventListener('input', (e) => {
+      state.temperatureAmt = parseInt(e.target.value, 10) || 0;
+      temperatureOut.textContent = `${state.temperatureAmt}`;
+      scheduleProcess();
+    });
+    tintSlider.addEventListener('input', (e) => {
+      state.tintAmt = parseInt(e.target.value, 10) || 0;
+      tintOut.textContent = `${state.tintAmt}`;
+      scheduleProcess();
+    });
+
+    // Desktop wheel zoom (syncs slider)
+    canvas.addEventListener('wheel', (e) => {
+      if (!state.userImg) return;
+      e.preventDefault();
+      const { offsetX, offsetY, deltaY } = e;
+      const factor = Math.pow(1.0015, -deltaY);
+      let newScale = state.user.scale * factor;
+      const minAbs = state.fitScale * parseFloat(scaleSlider.min);
+      const maxAbs = state.fitScale * parseFloat(scaleSlider.max);
+      newScale = clamp(newScale, minAbs, maxAbs);
+
+      const x = offsetX, y = offsetY;
+      const imgX = (x - state.user.x) / state.user.scale;
+      const imgY = (y - state.user.y) / state.user.scale;
+      state.user.x = x - imgX * newScale;
+      state.user.y = y - imgY * newScale;
+
+      state.user.scale = newScale;
+      const rel = newScale / state.fitScale;
+      scaleSlider.value = rel.toFixed(2);
+      scaleOut.textContent = `${Math.round(rel * 100)}%`;
+      clampPosition();
+      syncPositionUI();
+      draw();
+    }, { passive: false });
+
+    canvas.addEventListener('pointerdown', onPointerDown, { passive: false });
+    canvas.addEventListener('pointermove', onPointerMove, { passive: false });
+    window.addEventListener('pointerup', onPointerUp, { passive: false });
+
+    // Resize debounce
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(layoutCanvas, 60);
+    });
+
+    // Buttons
+    btnFit.addEventListener('click', fitUserImage);
+    btnReset.addEventListener('click', resetTransform);
+    btnDownload.addEventListener('click', downloadPNG);
+
+    // Cross-browser PNG download
+    function downloadPNG() {
+      try { canvas.toDataURL('image/png'); } catch (err) {
+        alert('Export blocked in file:// mode. Please run via a local server (e.g., python3 -m http.server).');
+        return;
+      }
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        const dataURL = canvas.toDataURL('image/png');
+        const w = window.open('', '_blank');
+        if (w) {
+          w.document.write('<meta name="viewport" content="width=device-width,initial-scale=1"/>' );
+          w.document.write('<title>framed.png</title>');
+          w.document.write('<img src="' + dataURL + '" style="max-width:100%;height:auto;display:block;margin:0 auto" />');
+        } else {
+          window.location.href = dataURL;
+        }
+        return;
+      }
+      if (canvas.toBlob) {
+        canvas.toBlob((blob) => {
+          if (!blob) { alert('Export failed (possibly blocked by browser).'); return; }
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'framed.png';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      } else {
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = 'framed.png';
+        a.click();
+      }
+    }
+  </script>
+</body>
+</html>

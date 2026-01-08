@@ -82,6 +82,14 @@
       appearance: none; height: 6px; border-radius: 999px; background: #e5e7eb; outline: none; width: 220px; cursor: pointer; border: 1px solid var(--border);
     }
     .slider::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); box-shadow: 0 2px 8px rgba(26,115,232,.3); }
+    .mini-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+
+    .corner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .corner-card { border: 1px solid var(--border); border-radius: 10px; padding: 10px; background: #fafbff; box-shadow: inset 0 1px 0 #fff; }
+    .corner-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .mini-row { display: flex; align-items: center; gap: 8px; }
+    .mini-row .slider { width: 180px; }
+    .mini-row .value { min-width: 48px; }
 
     .btn {
       border: 1px solid var(--border);
@@ -146,40 +154,34 @@
         <div class="group">
   <label for="frameSelect">Frame</label>
   <select id="frameSelect" style="padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#fff;width:100%;font-size:13px;">
-    <option value="CKT template landscape 120x190 dark.png" selected>CKT template landscape 120x190 dark</option>
-    <option value="CKT template landscape 120x190 light.png">CKT template landscape 120x190 light</option>
-    <option value="CKT template 150x120 dark.png">CKT template 150x120 dark</option>
-    <option value="CKT template 150x120 light.png">CKT template 150x120 light</option>
-    <option value="CKT template medium 160x135 dark.png">CKT template medium 160x135 dark</option>
-    <option value="CKT template medium 160x135 light.png">CKT template medium 160x135 light</option>
-    <option value="CKT template regular 215x165 dark.png">CKT template regular 215x165 dark</option>
-    <option value="CKT template regular 215x165 light.png">CKT template regular 215x165 light</option>
-    <option value="CKT template small close 50x40 dark.png">CKT template small close 50x40 dark</option>
-    <option value="CKT template small close 50x40 light.png">CKT template small close 50x40 light</option>
-    <option value="CKT template small far 50x40 dark.png">CKT template small far 50x40 dark</option>
-    <option value="CKT template small far 50x40 light.png">CKT template small far 50x40 light</option>
-    <option value="CKT template 55x55 cropped light.png">CKT template 55x55 cropped light</option>
-    <option value="CKT template 55x55 light.png">CKT template 55x55 light</option>
-    <option value="CKT template small close 55x55 light.png">CKT template small close 55x55 light</option>
-    <option value="CKT template small close 60x50 dark.png">CKT template small close 60x50 dark</option>
-    <option value="CKT template small close 60x50 light.png">CKT template small close 60x50 light</option>
-    <option value="CKT template small far 60x50 dark.png">CKT template small far 60x50 dark</option>
-    <option value="CKT template small far 60x50 light.png">CKT template small far 60x50 light</option>
-    <option value="CKT template 80x70 cropped light.png">CKT template 80x70 cropped light</option>
-    <option value="CKT template 80x70 light.png">CKT template 80x70 light</option>
-    <option value="CKT template small close 80x70 light.png">CKT template small close 80x70 light</option>
-    <option value="CKT template 90x80 cropped light.png">CKT template 90x80 cropped light</option>
-    <option value="CKT template 90x80 light.png">CKT template 90x80 light</option>
-    <option value="CKT template small close 90x80 light.png">CKT template small close 90x80 light</option>
-    <option value="CKT template small close 90x90 dark.png">CKT template small close 90x90 dark</option>
-    <option value="CKT template small close 90x90 light.png">CKT template small close 90x90 light</option>
-    <option value="CKT template 90x90 dark.png">CKT template 90x90 dark</option>
-    <option value="CKT template 90x90 light.png">CKT template 90x90 light</option>
-    <option value="CKT template 90x90 cropped dark.png">CKT template 90x90 cropped dark</option>
-    <option value="CKT template 90x90 cropped light.png">CKT template 90x90 cropped light</option>
-    <option value="ckt-aquarell-landscape-01 light.png">ckt-aquarell-landscape-01 light</option>
-    <option value="ckt-aquarell-portrait-01 light.png">ckt-aquarell-portrait-01 light</option>
+    <option value="ckt-template-120x190" data-full-dark="ckt-template-120x190-full-dark.png" data-full-light="ckt-template-120x190-full-light.png">ckt-template-120x190 (full only)</option>
+    <option value="ckt-template-150x120" data-full-dark="ckt-template-150x120-full-dark.png" data-full-light="ckt-template-150x120-full-light.png">ckt-template-150x120 (full only)</option>
+    <option value="ckt-template-160x135" data-full-dark="ckt-template-160x135-full-dark.png" data-full-light="ckt-template-160x135-full-light.png">ckt-template-160x135 (full only)</option>
+    <option value="ckt-template-215x165" data-full-dark="ckt-template-215x165-full-dark.png" data-full-light="ckt-template-215x165-full-light.png" selected>ckt-template-215x165 (full only)</option>
+    <option value="ckt-template-50x40" data-full-dark="ckt-template-50x40-full-dark.png" data-full-light="ckt-template-50x40-full-light.png" data-close-dark="ckt-template-50x40-close-dark.png" data-close-light="ckt-template-50x40-close-light.png">ckt-template-50x40 (full, close)</option>
+    <option value="ckt-template-55x55" data-full-light="ckt-template-55x55-full-light.png" data-close-light="ckt-template-55x55-close-light.png" data-crop-light="ckt-template-55x55-crop-light.png">ckt-template-55x55 (full, close, crop)</option>
+    <option value="ckt-template-60x50" data-full-dark="ckt-template-60x50-full-dark.png" data-full-light="ckt-template-60x50-full-light.png" data-close-dark="ckt-template-60x50-close-dark.png" data-close-light="ckt-template-60x50-close-light.png">ckt-template-60x50 (full, close)</option>
+    <option value="ckt-template-80x70" data-full-light="ckt-template-80x70-full-light.png" data-close-light="ckt-template-80x70-close-light.png" data-crop-light="ckt-template-80x70-crop-light.png">ckt-template-80x70 (full, close, crop)</option>
+    <option value="ckt-template-90x80" data-full-light="ckt-template-90x80-full-light.png" data-close-light="ckt-template-90x80-close-light.png" data-crop-light="ckt-template-90x80-crop-light.png">ckt-template-90x80 (full, close, crop)</option>
+    <option value="ckt-template-90x90" data-full-dark="ckt-template-90x90-full-dark.png" data-full-light="ckt-template-90x90-full-light.png" data-close-dark="ckt-template-90x90-close-dark.png" data-close-light="ckt-template-90x90-close-light.png" data-crop-dark="ckt-template-90x90-crop-dark.png" data-crop-light="ckt-template-90x90-crop-light.png">ckt-template-90x90 (full, close, crop)</option>
+    <option value="ckt-aquarell-landscape-01" data-full-light="ckt-aquarell-landscape-01 light.png">ckt-aquarell-landscape-01 (full, light only)</option>
+    <option value="ckt-aquarell-portrait-01" data-full-light="ckt-aquarell-portrait-01 light.png">ckt-aquarell-portrait-01 (full, light only)</option>
   </select>
+</div>
+<div class="group">
+  <label>Frame color</label>
+  <div class="row">
+    <label class="mini-check"><input id="frameToneDark" type="checkbox" checked /> Dark</label>
+    <label class="mini-check"><input id="frameToneLight" type="checkbox" /> Light</label>
+  </div>
+</div>
+<div class="group">
+  <label>Frame crop</label>
+  <div class="row">
+    <label class="mini-check"><input id="frameVarFull" type="checkbox" checked /> Full</label>
+    <label class="mini-check"><input id="frameVarCrop" type="checkbox" /> Cropped</label>
+    <label class="mini-check"><input id="frameVarClose" type="checkbox" /> Close</label>
+  </div>
 </div>
 
 
@@ -192,18 +194,75 @@
           </div>
         </div>
 
-        <!-- Position controls (new) -->
         <div class="group">
-          <label>Position</label>
+          <label>Pan</label>
           <div class="row">
             <span style="width:36px;color:var(--muted)">X</span>
-            <input id="posX" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
-            <span id="posXOut" class="value" aria-live="polite">0 px</span>
+            <input id="panX" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+            <span id="panXOut" class="value" aria-live="polite">0 px</span>
           </div>
           <div class="row">
             <span style="width:36px;color:var(--muted)">Y</span>
-            <input id="posY" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
-            <span id="posYOut" class="value" aria-live="polite">0 px</span>
+            <input id="panY" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+            <span id="panYOut" class="value" aria-live="polite">0 px</span>
+          </div>
+        </div>
+
+        <div class="group">
+          <label>Corner offsets (px)</label>
+          <div class="corner-grid">
+            <div class="corner-card">
+              <div class="corner-title">Top Left</div>
+              <div class="mini-row">
+                <span style="width:22px;color:var(--muted)">X</span>
+                <input id="tlx" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+                <span id="tlxOut" class="value" aria-live="polite">0</span>
+              </div>
+              <div class="mini-row">
+                <span style="width:22px;color:var(--muted)">Y</span>
+                <input id="tly" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+                <span id="tlyOut" class="value" aria-live="polite">0</span>
+              </div>
+            </div>
+            <div class="corner-card">
+              <div class="corner-title">Top Right</div>
+              <div class="mini-row">
+                <span style="width:22px;color:var(--muted)">X</span>
+                <input id="trx" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+                <span id="trxOut" class="value" aria-live="polite">0</span>
+              </div>
+              <div class="mini-row">
+                <span style="width:22px;color:var(--muted)">Y</span>
+                <input id="try" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+                <span id="tryOut" class="value" aria-live="polite">0</span>
+              </div>
+            </div>
+            <div class="corner-card">
+              <div class="corner-title">Bottom Right</div>
+              <div class="mini-row">
+                <span style="width:22px;color:var(--muted)">X</span>
+                <input id="brx" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+                <span id="brxOut" class="value" aria-live="polite">0</span>
+              </div>
+              <div class="mini-row">
+                <span style="width:22px;color:var(--muted)">Y</span>
+                <input id="bry" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+                <span id="bryOut" class="value" aria-live="polite">0</span>
+              </div>
+            </div>
+            <div class="corner-card">
+              <div class="corner-title">Bottom Left</div>
+              <div class="mini-row">
+                <span style="width:22px;color:var(--muted)">X</span>
+                <input id="blx" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+                <span id="blxOut" class="value" aria-live="polite">0</span>
+              </div>
+              <div class="mini-row">
+                <span style="width:22px;color:var(--muted)">Y</span>
+                <input id="bly" class="slider" type="range" min="-2000" max="2000" step="1" value="0" />
+                <span id="blyOut" class="value" aria-live="polite">0</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -263,16 +322,26 @@
     const stageWrap = document.getElementById('stageWrap');
     const uploader = document.getElementById('uploader');
     const frameSelect = document.getElementById('frameSelect');
+    const frameToneDark = document.getElementById('frameToneDark');
+    const frameToneLight = document.getElementById('frameToneLight');
+    const frameVarFull = document.getElementById('frameVarFull');
+    const frameVarCrop = document.getElementById('frameVarCrop');
+    const frameVarClose = document.getElementById('frameVarClose');
 
 
     const scaleSlider = document.getElementById('scale');
     const scaleOut = document.getElementById('scaleOut');
+    const panX = document.getElementById('panX');
+    const panXOut = document.getElementById('panXOut');
+    const panY = document.getElementById('panY');
+    const panYOut = document.getElementById('panYOut');
 
-    // Position sliders (new)
-    const posX = document.getElementById('posX');
-    const posXOut = document.getElementById('posXOut');
-    const posY = document.getElementById('posY');
-    const posYOut = document.getElementById('posYOut');
+    const cornerControls = {
+      tl: { x: document.getElementById('tlx'), y: document.getElementById('tly'), outX: document.getElementById('tlxOut'), outY: document.getElementById('tlyOut') },
+      tr: { x: document.getElementById('trx'), y: document.getElementById('try'), outX: document.getElementById('trxOut'), outY: document.getElementById('tryOut') },
+      br: { x: document.getElementById('brx'), y: document.getElementById('bry'), outX: document.getElementById('brxOut'), outY: document.getElementById('bryOut') },
+      bl: { x: document.getElementById('blx'), y: document.getElementById('bly'), outX: document.getElementById('blxOut'), outY: document.getElementById('blyOut') },
+    };
 
     const exposureSlider = document.getElementById('exposure');
     const exposureOut = document.getElementById('exposureOut');
@@ -295,7 +364,10 @@
 
     // --- State
     const state = {
-      frameSrc: 'CKT template landscape 120x190 dark.png',
+      frameBase: 'ckt-template-215x165',
+      frameTone: 'dark',
+      frameSrc: '',
+      frameVariant: 'full',
       frameImg: null,
       userOrigImg: null, // original <img>
       userImg: null,     // processed offscreen canvas
@@ -303,6 +375,16 @@
       viewH: 600,
       dpr: Math.min(window.devicePixelRatio || 1, 2),
       fitScale: 1,       // baseline for Zoom = 1.0
+      cornerOffsets: {
+        tl: { x: 0, y: 0 },
+        tr: { x: 0, y: 0 },
+        br: { x: 0, y: 0 },
+        bl: { x: 0, y: 0 },
+      },
+      cornerStrength: 0.1, // scale down slider influence
+      cornerRange: 2000,
+      needsPlacement: false,
+      panStrength: 0.1,
       // Adjustments
       exposureStops: 0,
       contrastAmt: 0,      // -50..+50 (linear contrast)
@@ -327,6 +409,13 @@
       });
     }
     function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function lerpPoint(p1, p2, t) { return { x: lerp(p1.x, p2.x, t), y: lerp(p1.y, p2.y, t) }; }
+    function quadPoint(tl, tr, bl, br, u, v) {
+      const top = lerpPoint(tl, tr, u);
+      const bottom = lerpPoint(bl, br, u);
+      return lerpPoint(top, bottom, v);
+    }
 
     function applyDPR() {
       state.dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -335,6 +424,186 @@
       canvas.width = Math.round(state.viewW * state.dpr);
       canvas.height = Math.round(state.viewH * state.dpr);
       ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0); // draw in CSS px
+    }
+
+    function getQuad() {
+      if (!state.userImg) return null;
+      const w = state.userImg.width * state.user.scale;
+      const h = state.userImg.height * state.user.scale;
+      const { x, y } = state.user;
+      const c = state.cornerOffsets;
+      const k = state.cornerStrength || 1;
+      return {
+        tl: { x: x + c.tl.x * k, y: y + c.tl.y * k },
+        tr: { x: x + w + c.tr.x * k, y: y + c.tr.y * k },
+        br: { x: x + w + c.br.x * k, y: y + h + c.br.y * k },
+        bl: { x: x + c.bl.x * k, y: y + h + c.bl.y * k },
+      };
+    }
+
+    function getQuadBounds(quad) {
+      const xs = [quad.tl.x, quad.tr.x, quad.br.x, quad.bl.x];
+      const ys = [quad.tl.y, quad.tr.y, quad.br.y, quad.bl.y];
+      return {
+        minX: Math.min(...xs), maxX: Math.max(...xs),
+        minY: Math.min(...ys), maxY: Math.max(...ys),
+      };
+    }
+
+    function getQuadCenter(quad) {
+      return {
+        x: (quad.tl.x + quad.tr.x + quad.br.x + quad.bl.x) / 4,
+        y: (quad.tl.y + quad.tr.y + quad.br.y + quad.bl.y) / 4,
+      };
+    }
+
+    function inflateTriangle(tri, amount = 0.75) {
+      const cx = (tri[0].x + tri[1].x + tri[2].x) / 3;
+      const cy = (tri[0].y + tri[1].y + tri[2].y) / 3;
+      return tri.map(p => {
+        const dx = p.x - cx, dy = p.y - cy;
+        const len = Math.hypot(dx, dy) || 1;
+        const k = (len + amount) / len;
+        return { x: cx + dx * k, y: cy + dy * k };
+      });
+    }
+
+    function resetCorners() {
+      state.cornerOffsets.tl.x = state.cornerOffsets.tl.y =
+      state.cornerOffsets.tr.x = state.cornerOffsets.tr.y =
+      state.cornerOffsets.br.x = state.cornerOffsets.br.y =
+      state.cornerOffsets.bl.x = state.cornerOffsets.bl.y = 0;
+      syncCornerUI();
+    }
+
+    function scaleCornerOffsets(kx, ky) {
+      const c = state.cornerOffsets;
+      c.tl.x *= kx; c.tr.x *= kx; c.br.x *= kx; c.bl.x *= kx;
+      c.tl.y *= ky; c.tr.y *= ky; c.br.y *= ky; c.bl.y *= ky;
+    }
+
+    function syncCornerBounds() {
+      const range = Math.max(800, Math.round(Math.max(state.viewW, state.viewH) * 0.75));
+      state.cornerRange = range;
+      Object.values(cornerControls).forEach(ctrl => {
+        ctrl.x.min = -range; ctrl.x.max = range;
+        ctrl.y.min = -range; ctrl.y.max = range;
+      });
+    }
+
+    function syncCornerUI() {
+      const c = state.cornerOffsets;
+      cornerControls.tl.x.value = String(Math.round(c.tl.x));
+      cornerControls.tl.y.value = String(Math.round(c.tl.y));
+      cornerControls.tr.x.value = String(Math.round(c.tr.x));
+      cornerControls.tr.y.value = String(Math.round(c.tr.y));
+      cornerControls.br.x.value = String(Math.round(c.br.x));
+      cornerControls.br.y.value = String(Math.round(c.br.y));
+      cornerControls.bl.x.value = String(Math.round(c.bl.x));
+      cornerControls.bl.y.value = String(Math.round(c.bl.y));
+
+      const k = state.cornerStrength || 1;
+      cornerControls.tl.outX.textContent = `${Math.round(c.tl.x * k)}`;
+      cornerControls.tl.outY.textContent = `${Math.round(c.tl.y * k)}`;
+      cornerControls.tr.outX.textContent = `${Math.round(c.tr.x * k)}`;
+      cornerControls.tr.outY.textContent = `${Math.round(c.tr.y * k)}`;
+      cornerControls.br.outX.textContent = `${Math.round(c.br.x * k)}`;
+      cornerControls.br.outY.textContent = `${Math.round(c.br.y * k)}`;
+      cornerControls.bl.outX.textContent = `${Math.round(c.bl.x * k)}`;
+      cornerControls.bl.outY.textContent = `${Math.round(c.bl.y * k)}`;
+    }
+
+    function syncPanUI() {
+      const k = state.panStrength || 1;
+      const minX = parseFloat(panX.min), maxX = parseFloat(panX.max);
+      const minY = parseFloat(panY.min), maxY = parseFloat(panY.max);
+      panX.value = String(Math.round(clamp(state.user.x / k, minX, maxX)));
+      panY.value = String(Math.round(clamp(state.user.y / k, minY, maxY)));
+      panXOut.textContent = `${Math.round(state.user.x)} px`;
+      panYOut.textContent = `${Math.round(state.user.y)} px`;
+    }
+
+    function updateToneUI(lightAvailable, tone) {
+      const useLight = tone === 'light' && lightAvailable;
+      frameToneLight.disabled = !lightAvailable;
+      frameToneLight.checked = useLight;
+      frameToneDark.checked = !useLight;
+    }
+
+    function updateVariantUI(variantAvailability, variant) {
+      const desired = variant || 'full';
+      const hasFull = !!variantAvailability.full;
+      const hasCrop = !!variantAvailability.crop;
+      const hasClose = !!variantAvailability.close;
+
+      frameVarFull.disabled = !hasFull;
+      frameVarCrop.disabled = !hasCrop;
+      frameVarClose.disabled = !hasClose;
+
+      let chosen = desired;
+      if (desired === 'full' && !hasFull) chosen = hasCrop ? 'crop' : hasClose ? 'close' : null;
+      if (desired === 'crop' && !hasCrop) chosen = hasFull ? 'full' : hasClose ? 'close' : null;
+      if (desired === 'close' && !hasClose) chosen = hasFull ? 'full' : hasCrop ? 'crop' : null;
+      if (!chosen) return;
+
+      frameVarFull.checked = chosen === 'full';
+      frameVarCrop.checked = chosen === 'crop';
+      frameVarClose.checked = chosen === 'close';
+
+      return chosen;
+    }
+
+    function resolveFrameSource(base, desiredTone, desiredVariant) {
+      const option = [...frameSelect.options].find(o => o.value === base) || frameSelect.selectedOptions[0];
+      if (!option) return null;
+      const tonePref = desiredTone === 'light' ? ['Light', 'Dark'] : ['Dark', 'Light'];
+      const variantPref = desiredVariant ? [desiredVariant] : [];
+      ['full', 'crop', 'close'].forEach(v => { if (!variantPref.includes(v)) variantPref.push(v); });
+
+      let chosenTone = desiredTone;
+      let chosenVariant = desiredVariant || 'full';
+      let src = '';
+
+      for (const toneKey of tonePref) {
+        for (const variant of variantPref) {
+          const key = `${variant}${toneKey}`;
+          if (option.dataset[key]) {
+            src = option.dataset[key];
+            chosenTone = toneKey === 'Light' ? 'light' : 'dark';
+            chosenVariant = variant;
+            break;
+          }
+        }
+        if (src) break;
+      }
+
+      if (!src) return null;
+
+      const variantAvailability = {
+        full: !!option.dataset.fullLight || !!option.dataset.fullDark,
+        crop: !!option.dataset.cropLight || !!option.dataset.cropDark,
+        close: !!option.dataset.closeLight || !!option.dataset.closeDark,
+      };
+      const lightAvailable = !!option.dataset.fullLight || !!option.dataset.cropLight || !!option.dataset.closeLight;
+
+      return { src, tone: chosenTone, variant: chosenVariant, lightAvailable, variantAvailability };
+    }
+
+    async function applyFrameChange() {
+      const desiredTone = frameToneLight.checked ? 'light' : 'dark';
+      const desiredVariant = frameVarCrop.checked ? 'crop' : frameVarClose.checked ? 'close' : 'full';
+      const base = frameSelect.value;
+      const resolved = resolveFrameSource(base, desiredTone, desiredVariant);
+      if (!resolved) return;
+      state.frameBase = base;
+      state.frameTone = resolved.tone;
+      state.frameSrc = resolved.src;
+      state.frameVariant = resolved.variant;
+      updateToneUI(resolved.lightAvailable, state.frameTone);
+      const finalVariant = updateVariantUI(resolved.variantAvailability, state.frameVariant);
+      if (finalVariant && finalVariant !== state.frameVariant) state.frameVariant = finalVariant;
+      state.frameImg = await loadImage(state.frameSrc);
+      layoutCanvas();
     }
 
     // Compute canvas CSS size from frame aspect and viewport
@@ -373,6 +642,7 @@
         state.user.x *= kx;
         state.user.y *= ky;
         state.user.scale *= k;
+        scaleCornerOffsets(kx, ky);
 
         // Sync slider to current zoom relative to new fit
         const rel = state.user.scale / state.fitScale;
@@ -380,9 +650,11 @@
         scaleOut.textContent = `${Math.round(rel * 100)}%`;
       }
 
+      syncCornerBounds();
       clampPosition();
-      syncPositionUI();
-      draw();
+      syncCornerUI();
+      syncPanUI();
+      requestDraw();
     }
 
     function fitUserImage() {
@@ -394,11 +666,15 @@
       state.user.scale = s;         // start at "fit"
       state.user.x = (cw - iw * s) / 2;
       state.user.y = (ch - ih * s) / 2;
+      resetCorners();
+      syncCornerBounds();
+      state.needsPlacement = false;
       scaleSlider.value = '1.00';   // 1.00 = 100% of fit
       scaleOut.textContent = '100%';
       clampPosition();
-      syncPositionUI();
-      draw();
+      syncCornerUI();
+      syncPanUI();
+      requestDraw();
     }
 
     function resetTransform() {
@@ -409,77 +685,129 @@
       state.user.scale = state.fitScale;
       state.user.x = (cw - iw * state.fitScale) / 2;
       state.user.y = (ch - ih * state.fitScale) / 2;
+      resetCorners();
+      syncCornerBounds();
+      state.needsPlacement = false;
       scaleSlider.value = '1.00';
       scaleOut.textContent = '100%';
       clampPosition();
-      syncPositionUI();
-      draw();
+      syncCornerUI();
+      syncPanUI();
+      requestDraw();
+    }
+
+    let drawPending = false;
+    function requestDraw() {
+      if (drawPending) return;
+      drawPending = true;
+      requestAnimationFrame(() => {
+        drawPending = false;
+        draw();
+      });
     }
 
     function draw() {
-      const { frameImg, userImg, user, viewW, viewH } = state;
+      const { frameImg, userImg, viewW, viewH } = state;
       ctx.clearRect(0, 0, viewW, viewH);
       ctx.fillStyle = '#ffffff'; // white canvas bg
       ctx.fillRect(0, 0, viewW, viewH);
 
       if (userImg) {
-        const w = userImg.width * user.scale;
-        const h = userImg.height * user.scale;
         ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(userImg, user.x, user.y, w, h);
+        ctx.imageSmoothingQuality = 'medium';
+        drawWarpedUserImage();
       }
       if (frameImg) {
         ctx.drawImage(frameImg, 0, 0, viewW, viewH);
       }
     }
 
+    function setTransformForTriangle(srcTri, dstTri) {
+      const [s0, s1, s2] = srcTri;
+      const [d0, d1, d2] = dstTri;
+      const denom = s0.x * (s1.y - s2.y) - s0.y * (s1.x - s2.x) + s1.x * s2.y - s2.x * s1.y || 1e-6;
+      const a = d0.x * (s1.y - s2.y) - d1.x * (s0.y - s2.y) + d2.x * (s0.y - s1.y);
+      const b = d0.x * (s2.x - s1.x) + d1.x * (s0.x - s2.x) + d2.x * (s1.x - s0.x);
+      const c = d0.x * (s1.x * s2.y - s2.x * s1.y) + d1.x * (s2.x * s0.y - s0.x * s2.y) + d2.x * (s0.x * s1.y - s1.x * s0.y);
+      const d = d0.y * (s1.y - s2.y) - d1.y * (s0.y - s2.y) + d2.y * (s0.y - s1.y);
+      const e = d0.y * (s2.x - s1.x) + d1.y * (s0.x - s2.x) + d2.y * (s1.x - s0.x);
+      const f = d0.y * (s1.x * s2.y - s2.x * s1.y) + d1.y * (s2.x * s0.y - s0.x * s2.y) + d2.y * (s0.x * s1.y - s1.x * s0.y);
+      const dpr = state.dpr || 1;
+      ctx.setTransform(a / denom * dpr, d / denom * dpr, b / denom * dpr, e / denom * dpr, c / denom * dpr, f / denom * dpr);
+    }
+
+    function drawTriangle(img, s0, s1, s2, d0, d1, d2) {
+      const inflated = inflateTriangle([d0, d1, d2], 0.75);
+      const id0 = inflated[0], id1 = inflated[1], id2 = inflated[2];
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(id0.x, id0.y);
+      ctx.lineTo(id1.x, id1.y);
+      ctx.lineTo(id2.x, id2.y);
+      ctx.closePath();
+      ctx.clip();
+      setTransformForTriangle([s0, s1, s2], [id0, id1, id2]);
+      ctx.drawImage(img, 0, 0);
+      ctx.restore();
+    }
+
+    function drawWarpedUserImage() {
+      const quad = getQuad();
+      const img = state.userImg;
+      if (!quad || !img) return;
+
+      const cols = 12, rows = 12;
+      for (let i = 0; i < cols; i++) {
+        const u0 = i / cols, u1 = (i + 1) / cols;
+        const q0Top = lerpPoint(quad.tl, quad.tr, u0);
+        const q0Bot = lerpPoint(quad.bl, quad.br, u0);
+        const q1Top = lerpPoint(quad.tl, quad.tr, u1);
+        const q1Bot = lerpPoint(quad.bl, quad.br, u1);
+
+        for (let j = 0; j < rows; j++) {
+          const v0 = j / rows, v1 = (j + 1) / rows;
+          const p00 = lerpPoint(q0Top, q0Bot, v0);
+          const p01 = lerpPoint(q0Top, q0Bot, v1);
+          const p10 = lerpPoint(q1Top, q1Bot, v0);
+          const p11 = lerpPoint(q1Top, q1Bot, v1);
+
+          const sx0 = u0 * img.width, sx1 = u1 * img.width;
+          const sy0 = v0 * img.height, sy1 = v1 * img.height;
+
+          drawTriangle(img,
+            { x: sx0, y: sy0 }, { x: sx1, y: sy0 }, { x: sx1, y: sy1 },
+            p00, p10, p11);
+          drawTriangle(img,
+            { x: sx0, y: sy0 }, { x: sx1, y: sy1 }, { x: sx0, y: sy1 },
+            p00, p11, p01);
+        }
+      }
+      ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+    }
+
     function hitOnUserImage(px, py) {
       if (!state.userImg) return false;
-      const w = state.userImg.width * state.user.scale;
-      const h = state.userImg.height * state.user.scale;
-      return px >= state.user.x && py >= state.user.y && px <= state.user.x + w && py <= state.user.y + h;
+      const quad = getQuad();
+      if (!quad) return false;
+      const triA = [quad.tl, quad.tr, quad.br];
+      const triB = [quad.tl, quad.br, quad.bl];
+      const pointInTri = (p, a, b, c) => {
+        const sign = (p, a, b) => (p.x - b.x) * (a.y - b.y) - (a.x - b.x) * (p.y - b.y);
+        const b1 = sign(p, a, b) < 0, b2 = sign(p, b, c) < 0, b3 = sign(p, c, a) < 0;
+        return (b1 === b2) && (b2 === b3);
+      };
+      return pointInTri({ x: px, y: py }, ...triA) || pointInTri({ x: px, y: py }, ...triB);
     }
 
     // --- Position helpers (new)
-    function computePositionBounds() {
-      // Allow panning beyond edges by up to 50% of the visible canvas size
-      const margin = 1.0; // tweak to taste
-      if (!state.userImg) {
-        return { minX: -1000, maxX: 1000, minY: -1000, maxY: 1000 };
-      }
-      const w = state.userImg.width * state.user.scale;
-      const h = state.userImg.height * state.user.scale;
-      const minX = -w + state.viewW * (1 - margin);
-      const maxX = state.viewW * margin;
-      const minY = -h + state.viewH * (1 - margin);
-      const maxY = state.viewH * margin;
-      return { minX, maxX, minY, maxY };
-    }
-
     function clampPosition() {
-      const { minX, maxX, minY, maxY } = computePositionBounds();
-      state.user.x = clamp(state.user.x, minX, maxX);
-      state.user.y = clamp(state.user.y, minY, maxY);
-    }
-
-    function syncPositionUI() {
-      const { minX, maxX, minY, maxY } = computePositionBounds();
-      posX.min = Math.floor(minX);
-      posX.max = Math.ceil(maxX);
-      posY.min = Math.floor(minY);
-      posY.max = Math.ceil(maxY);
-
-      posX.value = String(Math.round(state.user.x));
-      posY.value = String(Math.round(state.user.y));
-      posXOut.textContent = `${Math.round(state.user.x)} px`;
-      posYOut.textContent = `${Math.round(state.user.y)} px`;
+      // Keep some looseness so you can freely distort outside the frame
     }
 
     // --- Color processing (one pass, debounced)
     function scheduleProcess() {
       clearTimeout(state.processingTimer);
-      state.processingTimer = setTimeout(processImage, 80);
+      state.processingTimer = setTimeout(processImage, 120);
     }
 
     function processImage() {
@@ -552,13 +880,14 @@
       state.userImg = off;
 
       // If first build, fit to view
-      if (state.fitScale === 1 && state.user.x === 0 && state.user.y === 0 && state.user.scale === 1) {
+      if (state.needsPlacement) {
         fitUserImage();
       } else {
-        // Keep current absolute scale/position; just redraw
         clampPosition();
-        syncPositionUI();
-        draw();
+        syncCornerBounds();
+        syncCornerUI();
+        syncPanUI();
+        requestDraw();
       }
     }
 
@@ -624,6 +953,8 @@
         const mx = state.pinch.midX, my = state.pinch.midY;
         const imgX = (mx - state.user.x) / state.user.scale;
         const imgY = (my - state.user.y) / state.user.scale;
+        const factor = newScale / state.user.scale;
+        scaleCornerOffsets(factor, factor);
         state.user.x = mx - imgX * newScale;
         state.user.y = my - imgY * newScale;
         state.user.scale = newScale;
@@ -634,8 +965,10 @@
 
         e.preventDefault();
         clampPosition();
-        syncPositionUI();
-        draw();
+        syncCornerBounds();
+        syncCornerUI();
+        syncPanUI();
+        requestDraw();
         return;
       }
 
@@ -647,8 +980,9 @@
         state.user.y = state.user.imgStartY + dy;
         e.preventDefault();
         clampPosition();
-        syncPositionUI();
-        draw();
+        syncCornerUI();
+        syncPanUI();
+        requestDraw();
       }
     }
 
@@ -661,18 +995,52 @@
 
     // --- Init
     (async function init() {
-      state.frameImg = await loadImage(state.frameSrc);
-      layoutCanvas();
+      await applyFrameChange();
     })().catch(console.error);
 
     // --- Events
-    frameSelect.addEventListener('change', async (e) => {
-  state.frameSrc = e.target.value;
-  state.frameImg = await loadImage(state.frameSrc);
-  const prevW = state.viewW;
-  layoutCanvas();
-  if (state.userImg && Math.abs(state.viewW - prevW) > 2) draw();
-});
+    frameSelect.addEventListener('change', () => { applyFrameChange(); });
+    frameToneDark.addEventListener('change', () => {
+      if (frameToneDark.checked) frameToneLight.checked = false;
+      else if (!frameToneLight.checked) frameToneDark.checked = true;
+      applyFrameChange();
+    });
+    frameToneLight.addEventListener('change', () => {
+      if (frameToneLight.disabled) { frameToneLight.checked = false; return; }
+      if (frameToneLight.checked) frameToneDark.checked = false;
+      else if (!frameToneDark.checked) frameToneDark.checked = true;
+      applyFrameChange();
+    });
+    frameVarFull.addEventListener('change', () => {
+      if (frameVarFull.disabled) { frameVarFull.checked = false; return; }
+      if (frameVarFull.checked) {
+        frameVarCrop.checked = false;
+        frameVarClose.checked = false;
+      } else if (!frameVarCrop.checked && !frameVarClose.checked) {
+        frameVarFull.checked = true;
+      }
+      applyFrameChange();
+    });
+    frameVarCrop.addEventListener('change', () => {
+      if (frameVarCrop.disabled) { frameVarCrop.checked = false; return; }
+      if (frameVarCrop.checked) {
+        frameVarFull.checked = false;
+        frameVarClose.checked = false;
+      } else if (!frameVarFull.checked && !frameVarClose.checked) {
+        frameVarFull.checked = true;
+      }
+      applyFrameChange();
+    });
+    frameVarClose.addEventListener('change', () => {
+      if (frameVarClose.disabled) { frameVarClose.checked = false; return; }
+      if (frameVarClose.checked) {
+        frameVarFull.checked = false;
+        frameVarCrop.checked = false;
+      } else if (!frameVarFull.checked && !frameVarCrop.checked) {
+        frameVarFull.checked = true;
+      }
+      applyFrameChange();
+    });
 
     uploader.addEventListener('change', async (e) => {
       const file = e.target.files?.[0];
@@ -680,11 +1048,11 @@
       const url = URL.createObjectURL(file);
       const img = await loadImage(url);
       state.userOrigImg = img;
+      state.needsPlacement = true;
+      resetCorners();
 
       // Build first processed version
       processImage();
-      // Fit after first processing
-      setTimeout(() => { fitUserImage(); }, 0);
     });
 
     // Zoom slider (relative to Fit)
@@ -693,38 +1061,62 @@
       const rel = parseFloat(e.target.value); // 0.25..4
       const newScale = clamp(rel, parseFloat(scaleSlider.min), parseFloat(scaleSlider.max)) * state.fitScale;
 
-      const iw = state.userImg.width * state.user.scale;
-      const ih = state.userImg.height * state.user.scale;
-      const cx = state.user.x + iw / 2;
-      const cy = state.user.y + ih / 2;
-
-      const iw2 = state.userImg.width * newScale;
-      const ih2 = state.userImg.height * newScale;
-      state.user.x = cx - iw2 / 2;
-      state.user.y = cy - ih2 / 2;
+      const quadBefore = getQuad();
+      const centerBefore = quadBefore ? getQuadCenter(quadBefore) : { x: state.viewW / 2, y: state.viewH / 2 };
+      const factor = newScale / state.user.scale;
       state.user.scale = newScale;
+      scaleCornerOffsets(factor, factor);
+      const quadAfter = getQuad();
+      if (quadAfter) {
+        const centerAfter = getQuadCenter(quadAfter);
+        state.user.x += centerBefore.x - centerAfter.x;
+        state.user.y += centerBefore.y - centerAfter.y;
+      }
 
       scaleOut.textContent = `${Math.round(rel * 100)}%`;
       clampPosition();
-      syncPositionUI();
-      draw();
+      syncCornerBounds();
+      syncCornerUI();
+      syncPanUI();
+      requestDraw();
     });
 
-    // Position sliders (new)
-    posX.addEventListener('input', (e) => {
-      if (!state.userImg) return;
-      state.user.x = parseInt(e.target.value, 10) || 0;
-      clampPosition();
-      syncPositionUI();
-      draw();
+    // Corner sliders
+    Object.entries(cornerControls).forEach(([key, ctrl]) => {
+      ctrl.x.addEventListener('input', (e) => {
+        if (!state.userImg) return;
+        state.cornerOffsets[key].x = parseInt(e.target.value, 10) || 0;
+        clampPosition();
+        syncCornerUI();
+        syncPanUI();
+        requestDraw();
+      });
+      ctrl.y.addEventListener('input', (e) => {
+        if (!state.userImg) return;
+        state.cornerOffsets[key].y = parseInt(e.target.value, 10) || 0;
+        clampPosition();
+        syncCornerUI();
+        syncPanUI();
+        requestDraw();
+      });
     });
 
-    posY.addEventListener('input', (e) => {
+    // Pan sliders
+    panX.addEventListener('input', (e) => {
       if (!state.userImg) return;
-      state.user.y = parseInt(e.target.value, 10) || 0;
+      const k = state.panStrength || 1;
+      state.user.x = (parseInt(e.target.value, 10) || 0) * k;
       clampPosition();
-      syncPositionUI();
-      draw();
+      syncPanUI();
+      requestDraw();
+    });
+    panY.addEventListener('input', (e) => {
+      if (!state.userImg) return;
+      const k = state.panStrength || 1;
+      state.user.y = (parseInt(e.target.value, 10) || 0) * k;
+      clampPosition();
+      syncPanUI();
+      requestDraw();
     });
 
     // Color controls (debounced)
@@ -768,6 +1160,8 @@
       const x = offsetX, y = offsetY;
       const imgX = (x - state.user.x) / state.user.scale;
       const imgY = (y - state.user.y) / state.user.scale;
+      const scaleFactor = newScale / state.user.scale;
+      scaleCornerOffsets(scaleFactor, scaleFactor);
       state.user.x = x - imgX * newScale;
       state.user.y = y - imgY * newScale;
 
@@ -776,8 +1170,10 @@
       scaleSlider.value = rel.toFixed(2);
       scaleOut.textContent = `${Math.round(rel * 100)}%`;
       clampPosition();
-      syncPositionUI();
-      draw();
+      syncCornerBounds();
+      syncCornerUI();
+      syncPanUI();
+      requestDraw();
     }, { passive: false });
 
     canvas.addEventListener('pointerdown', onPointerDown, { passive: false });
