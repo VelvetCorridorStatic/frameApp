@@ -401,6 +401,9 @@
       saturationMul: 1,    // 0..2
       temperatureAmt: 0,   // -100..+100 (cool..warm)
       tintAmt: 0,          // -100..+100 (green..magenta)
+      mobileViewportH: window.innerHeight, // locked mobile height to prevent scroll-bar resize jitter
+      lastViewportW: window.innerWidth,
+      lastViewportH: window.innerHeight,
       // Interaction
       processingTimer: null,
       user: { x: 0, y: 0, scale: 1, isDragging: false, dragStartX: 0, dragStartY: 0, imgStartX: 0, imgStartY: 0 },
@@ -631,7 +634,7 @@
         w = Math.min(idealW, maxW);
       } else {
         const maxW = Math.min(1200, Math.floor(window.innerWidth * 0.92));
-        const maxH = Math.floor(window.innerHeight * 0.6);
+        const maxH = Math.floor(state.mobileViewportH * 0.6);
         w = maxW;
         h = Math.round(w / aspect);
         if (h > maxH) {
@@ -1199,7 +1202,21 @@
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(layoutCanvas, 60);
+      resizeTimer = setTimeout(() => {
+        const desktop = window.matchMedia('(min-width: 1024px)').matches;
+        const widthChanged = window.innerWidth !== state.lastViewportW;
+
+        // On phones, ignore pure height changes caused by browser chrome show/hide while scrolling.
+        if (!desktop && !widthChanged) {
+          state.lastViewportH = window.innerHeight;
+          return;
+        }
+
+        if (!desktop) state.mobileViewportH = window.innerHeight;
+        state.lastViewportW = window.innerWidth;
+        state.lastViewportH = window.innerHeight;
+        layoutCanvas();
+      }, 60);
     });
 
     // Buttons
