@@ -104,6 +104,16 @@
     .btn:active { transform: translateY(1px); }
     .btn#download { background: linear-gradient(#e8f0fe, #dbe8fd); border-color: rgba(26,115,232,.25); }
 
+    /* Mobile: keep stage visible while scrolling controls */
+    @media (max-width: 1023px) {
+      main {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--bg);
+      }
+    }
+
     /* Desktop (≥1024px): two-pane layout */
     @media (min-width: 1024px) {
       .shell {
@@ -621,8 +631,13 @@
         w = Math.min(idealW, maxW);
       } else {
         const maxW = Math.min(1200, Math.floor(window.innerWidth * 0.92));
+        const maxH = Math.floor(window.innerHeight * 0.6);
         w = maxW;
         h = Math.round(w / aspect);
+        if (h > maxH) {
+          h = maxH;
+          w = Math.round(h * aspect);
+        }
       }
 
       const oldW = state.viewW, oldH = state.viewH;
